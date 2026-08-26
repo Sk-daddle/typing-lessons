@@ -1,0 +1,1711 @@
+<title>TypeQuest</title>
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Baloo+2:wght@600;700;800&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700&family=IBM+Plex+Mono:wght@400;500;600&display=swap">
+<style>
+:root{
+  --cloud:#F2F6FF;
+  --card:#FFFFFF;
+  --ink:#2B3A67;
+  --sub:#7583AC;
+  --line:#DCE3F5;
+  --sun:#FFC845;
+  --sun-soft:#FFF3D6;
+  --coral:#FF7B6B;
+  --coral-deep:#E85B4A;
+  --mint:#3EC28F;
+  --mint-soft:#E0F6EC;
+  --berry:#8A6FE8;
+  --berry-soft:#EEE9FC;
+  --danger:#E85B4A;
+  --f-pinky:#D98CE8; --f-pinky-t:#F7E4FB;
+  --f-ring:#8F9FF3;  --f-ring-t:#E9EDFD;
+  --f-mid:#4BC7A6;   --f-mid-t:#DFF5EE;
+  --f-index:#FFAA5C; --f-index-t:#FFEEDD;
+  --f-thumb:#AEB9D6; --f-thumb-t:#EEF1F7;
+  --radius:16px;
+  --shadow:0 6px 18px rgba(43,58,103,.10);
+  --display:"Baloo 2",system-ui,sans-serif;
+  --body:"Atkinson Hyperlegible",system-ui,sans-serif;
+  --mono:"IBM Plex Mono",ui-monospace,Menlo,Consolas,monospace;
+}
+*{box-sizing:border-box}
+html,body{margin:0;padding:0}
+body{
+  background:var(--cloud);
+  color:var(--ink);
+  font-family:var(--body);
+  font-size:17px;
+  line-height:1.5;
+  min-height:100vh;
+}
+h1,h2,h3,.disp{font-family:var(--display);line-height:1.15;margin:0}
+h1{font-size:1.9rem}h2{font-size:1.4rem}h3{font-size:1.15rem}
+p{margin:0}
+button{font:inherit;cursor:pointer;border:none;background:none;color:inherit}
+button:focus-visible,a:focus-visible{outline:3px solid var(--berry);outline-offset:2px;border-radius:8px}
+.hidden{display:none!important}
+
+/* ---------- keycap language ---------- */
+.keycap{
+  display:inline-flex;align-items:center;justify-content:center;gap:.45em;
+  background:var(--card);
+  border:2px solid var(--line);
+  border-bottom-width:5px;
+  border-radius:14px;
+  font-family:var(--display);font-weight:700;
+  padding:.5em 1.15em;
+  color:var(--ink);
+  transition:transform .08s ease,border-bottom-width .08s ease,filter .15s ease;
+  user-select:none;
+}
+.keycap:hover{filter:brightness(1.03)}
+.keycap:active{transform:translateY(3px);border-bottom-width:2px}
+.keycap.primary{background:var(--coral);border-color:var(--coral-deep);color:#fff}
+.keycap.sunny{background:var(--sun);border-color:#E0A824;color:#5C4300}
+.keycap.minty{background:var(--mint);border-color:#2E9A70;color:#fff}
+.keycap.berry{background:var(--berry);border-color:#6C51C9;color:#fff}
+.keycap.ghost{background:transparent;border-color:transparent;font-weight:600;color:var(--sub)}
+.keycap.ghost:hover{color:var(--ink);filter:none}
+.keycap.big{font-size:1.15rem;padding:.6em 1.4em}
+.keycap:disabled{opacity:.45;cursor:not-allowed}
+.keycap:disabled:active{transform:none;border-bottom-width:5px}
+
+/* ---------- topbar ---------- */
+#topbar{
+  position:sticky;top:0;z-index:40;
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:10px 20px;
+  background:rgba(242,246,255,.92);
+  backdrop-filter:blur(6px);
+  border-bottom:2px solid var(--line);
+}
+#topbar .logo{display:flex;align-items:center;gap:10px;font-family:var(--display);font-weight:800;font-size:1.35rem;cursor:pointer}
+#topbar .logo .logo-key{
+  display:inline-flex;align-items:center;justify-content:center;
+  width:38px;height:38px;border-radius:10px;
+  background:var(--sun);border:2px solid #E0A824;border-bottom-width:4px;
+  font-size:1.1rem;
+}
+#topbar .right{display:flex;align-items:center;gap:10px}
+.star-pill{
+  display:inline-flex;align-items:center;gap:6px;
+  background:var(--sun-soft);border:2px solid var(--sun);
+  border-radius:999px;padding:4px 12px;
+  font-family:var(--display);font-weight:700;font-size:.95rem;
+}
+.chip{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--card);border:2px solid var(--line);border-bottom-width:4px;
+  border-radius:999px;padding:4px 14px 4px 6px;
+  font-family:var(--display);font-weight:700;font-size:.95rem;
+}
+.chip .avatar{font-size:1.25rem}
+.icon-btn{
+  width:40px;height:40px;border-radius:12px;
+  display:inline-flex;align-items:center;justify-content:center;
+  background:var(--card);border:2px solid var(--line);border-bottom-width:4px;
+  font-size:1.1rem;
+}
+.icon-btn:active{transform:translateY(2px);border-bottom-width:2px}
+
+/* ---------- layout ---------- */
+main{max-width:980px;margin:0 auto;padding:26px 20px 80px}
+.screen{animation:screenIn .25s ease}
+@keyframes screenIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- profiles ---------- */
+.hero{text-align:center;margin:34px 0 30px}
+.hero .mascot{font-size:3.4rem;display:block;margin-bottom:6px}
+.hero h1{font-size:2.5rem;letter-spacing:.5px}
+.hero p{color:var(--sub);max-width:52ch;margin:10px auto 0;text-wrap:balance}
+.profile-grid{display:flex;flex-wrap:wrap;gap:16px;justify-content:center;margin-top:26px}
+.profile-card{
+  width:150px;padding:18px 12px;text-align:center;
+  background:var(--card);border:2px solid var(--line);border-bottom-width:6px;border-radius:var(--radius);
+  transition:transform .12s ease;
+}
+.profile-card:hover{transform:translateY(-3px)}
+.profile-card .avatar{font-size:2.6rem;display:block}
+.profile-card .name{display:block;font-family:var(--display);font-weight:700;margin-top:6px;font-size:1.1rem}
+.profile-card .meta{display:block;color:var(--sub);font-size:.85rem;margin-top:2px}
+.profile-card.new{border-style:dashed;color:var(--sub);background:transparent}
+.avatar-picker{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:14px 0}
+.avatar-opt{font-size:1.7rem;width:52px;height:52px;border-radius:12px;border:2px solid var(--line);background:var(--card)}
+.avatar-opt.sel{border-color:var(--coral);background:#FFF0EE;box-shadow:0 0 0 2px var(--coral)}
+.name-input{
+  font:inherit;font-family:var(--display);font-weight:700;font-size:1.2rem;
+  border:2px solid var(--line);border-radius:12px;padding:10px 14px;width:min(300px,80vw);
+  text-align:center;color:var(--ink);background:var(--card);
+}
+.name-input:focus{outline:3px solid var(--berry);outline-offset:1px}
+.modal-wrap{position:fixed;inset:0;z-index:60;display:flex;align-items:center;justify-content:center;background:rgba(43,58,103,.35);padding:20px}
+.modal{background:var(--card);border-radius:20px;border:2px solid var(--line);border-bottom-width:6px;padding:26px;max-width:440px;width:100%;text-align:center;box-shadow:var(--shadow)}
+.modal h2{margin-bottom:4px}
+.modal .row{display:flex;gap:10px;justify-content:center;margin-top:18px;flex-wrap:wrap}
+.kbd-note{margin-top:34px;text-align:center;color:var(--sub);font-size:.9rem}
+
+/* ---------- quest map ---------- */
+.map-head{display:flex;align-items:flex-end;justify-content:space-between;gap:14px;flex-wrap:wrap;margin-bottom:8px}
+.map-head p{color:var(--sub)}
+.unit{
+  background:var(--card);border:2px solid var(--line);border-bottom-width:6px;
+  border-radius:20px;padding:20px 22px;margin-top:22px;
+}
+.unit.locked{opacity:.62}
+.unit-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.unit-head .u-icon{
+  width:48px;height:48px;border-radius:14px;font-size:1.5rem;
+  display:inline-flex;align-items:center;justify-content:center;
+  border:2px solid var(--line);border-bottom-width:4px;background:var(--cloud);
+}
+.unit-head .u-titles{flex:1;min-width:180px}
+.unit-head .u-sub{color:var(--sub);font-size:.9rem}
+.unit-stars{font-family:var(--display);font-weight:700;color:var(--sub);font-size:.95rem}
+.lesson-flow{display:flex;flex-wrap:wrap;gap:18px 8px;margin-top:18px;align-items:center}
+.lesson-node{
+  position:relative;
+  width:64px;height:64px;border-radius:16px;
+  background:var(--cloud);border:2px solid var(--line);border-bottom-width:6px;
+  font-family:var(--mono);font-weight:600;font-size:1.05rem;color:var(--ink);
+  display:inline-flex;align-items:center;justify-content:center;
+  transition:transform .12s ease;
+}
+.lesson-node:hover{transform:translateY(-3px)}
+.lesson-node:nth-child(4n+2){margin-top:14px}
+.lesson-node:nth-child(4n){margin-bottom:14px}
+.lesson-node .stars{
+  position:absolute;bottom:-11px;left:50%;transform:translateX(-50%);
+  font-size:.62rem;letter-spacing:1px;white-space:nowrap;
+  background:var(--card);border-radius:999px;padding:1px 6px;border:1.5px solid var(--line);
+}
+.lesson-node.done{background:var(--mint-soft);border-color:var(--mint)}
+.lesson-node.next{background:var(--sun);border-color:#E0A824;animation:bounce 1.6s ease infinite}
+@keyframes bounce{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+.lesson-node.locked{color:#AFB9D6;background:#EDF0F9;cursor:not-allowed}
+.lesson-node.locked:hover{transform:none}
+.flow-link{color:#C3CCE8;font-weight:700;letter-spacing:2px;font-size:.8rem;user-select:none}
+.game-node{
+  height:64px;border-radius:16px;padding:0 20px;
+  display:inline-flex;align-items:center;gap:10px;
+  background:var(--berry);border:2px solid #6C51C9;border-bottom-width:6px;color:#fff;
+  font-family:var(--display);font-weight:700;font-size:1rem;
+  transition:transform .12s ease;
+}
+.game-node:hover{transform:translateY(-3px)}
+.game-node.locked{background:#EDF0F9;border-color:var(--line);color:#AFB9D6;cursor:not-allowed}
+.game-node.locked:hover{transform:none}
+.game-node .hs{font-size:.75rem;opacity:.85;font-family:var(--body)}
+
+/* ---------- lesson screen ---------- */
+.lesson-top{display:flex;align-items:center;gap:12px;flex-wrap:wrap}
+.lesson-top .titles{flex:1;min-width:200px}
+.lesson-top .titles .crumbs{color:var(--sub);font-size:.85rem}
+.line-dots{display:flex;gap:6px}
+.line-dots span{width:12px;height:12px;border-radius:50%;background:var(--line)}
+.line-dots span.done{background:var(--mint)}
+.line-dots span.cur{background:var(--sun);outline:2px solid #E0A824}
+.coach{
+  display:flex;gap:14px;align-items:flex-start;
+  background:var(--berry-soft);border:2px solid #D6CCF5;border-radius:18px;
+  padding:14px 18px;margin-top:18px;
+}
+.coach .owl{font-size:2rem;line-height:1}
+.coach .say{flex:1}
+.coach .say b{font-family:var(--display)}
+.newkeys{display:inline-flex;gap:6px;margin-left:8px;vertical-align:middle}
+.newkeys .nk{
+  display:inline-flex;align-items:center;justify-content:center;
+  min-width:30px;height:30px;padding:0 6px;border-radius:8px;
+  background:var(--card);border:2px solid var(--sun);border-bottom-width:4px;
+  font-family:var(--mono);font-weight:600;text-transform:uppercase;font-size:.95rem;
+}
+.type-card{
+  background:var(--card);border:2px solid var(--line);border-bottom-width:6px;
+  border-radius:20px;padding:26px 30px;margin-top:18px;position:relative;overflow:hidden;
+}
+.type-line{
+  font-family:var(--mono);font-size:1.55rem;line-height:2.1;
+  display:flex;flex-wrap:wrap;column-gap:.62ch;
+  min-height:2.2em;
+}
+.type-line .w{display:inline-flex;white-space:nowrap}
+.type-line .c{color:#A9B3D2;border-radius:6px;padding:0 1px;position:relative}
+.type-line .c.ok{color:var(--ink)}
+.type-line .c.err{color:var(--danger);background:#FDE4E0}
+.type-line .c.cur{background:var(--sun);color:#5C4300;animation:curPulse 1s ease infinite}
+@keyframes curPulse{0%,100%{box-shadow:0 0 0 0 rgba(255,200,69,.7)}50%{box-shadow:0 0 0 5px rgba(255,200,69,0)}}
+.type-line .c.sp.cur::after{content:"␣";opacity:.55}
+.next-line{color:var(--sub);font-family:var(--mono);font-size:1rem;margin-top:14px;opacity:.75}
+.type-card.tall .type-line{max-height:200px;overflow-y:auto;padding-bottom:4px}
+.type-card.shake{animation:shake .18s linear}
+@keyframes shake{25%{transform:translateX(-5px)}75%{transform:translateX(5px)}}
+.stats-row{display:flex;gap:14px;align-items:center;margin-top:18px;flex-wrap:wrap}
+.stat{
+  background:var(--card);border:2px solid var(--line);border-radius:14px;
+  padding:8px 16px;min-width:92px;text-align:center;
+}
+.stat .v{font-family:var(--display);font-weight:800;font-size:1.3rem;font-variant-numeric:tabular-nums}
+.stat .l{color:var(--sub);font-size:.72rem;text-transform:uppercase;letter-spacing:1.2px}
+.stat.timer .v{color:var(--coral-deep)}
+.progressbar{flex:1;height:14px;background:var(--card);border:2px solid var(--line);border-radius:999px;overflow:hidden;min-width:140px}
+.progressbar i{display:block;height:100%;background:var(--mint);border-radius:999px;width:0%;transition:width .2s ease}
+
+/* ---------- on-screen keyboard ---------- */
+.kb{
+  margin:22px auto 0;max-width:660px;
+  display:flex;flex-direction:column;gap:7px;
+  user-select:none;
+}
+.kb-row{display:flex;gap:7px;justify-content:center}
+.kb-key{
+  height:48px;flex:1 0 0;min-width:0;
+  border-radius:10px;
+  border:2px solid var(--line);border-bottom-width:4px;
+  background:var(--card);
+  font-family:var(--mono);font-weight:500;font-size:.95rem;text-transform:uppercase;
+  display:flex;align-items:center;justify-content:center;
+  color:var(--ink);
+}
+.kb-key.f-pinky{background:var(--f-pinky-t);border-color:var(--f-pinky)}
+.kb-key.f-ring{background:var(--f-ring-t);border-color:var(--f-ring)}
+.kb-key.f-mid{background:var(--f-mid-t);border-color:var(--f-mid)}
+.kb-key.f-index{background:var(--f-index-t);border-color:var(--f-index)}
+.kb-key.f-thumb{background:var(--f-thumb-t);border-color:var(--f-thumb)}
+.kb-key.wide{flex-grow:1.6;font-size:.7rem;letter-spacing:.5px}
+.kb-key.xwide{flex-grow:2.2;font-size:.7rem}
+.kb-key.space{flex-grow:7}
+.kb-key.hit{animation:keyHit .8s ease infinite;color:#fff;font-weight:600}
+.kb-key.hit.f-pinky{background:var(--f-pinky)}
+.kb-key.hit.f-ring{background:var(--f-ring)}
+.kb-key.hit.f-mid{background:var(--f-mid)}
+.kb-key.hit.f-index{background:var(--f-index)}
+.kb-key.hit.f-thumb{background:var(--f-thumb);color:var(--ink)}
+@keyframes keyHit{0%,100%{transform:scale(1)}50%{transform:scale(1.08)}}
+.kb-key{position:relative}
+.kb-key.bump::after{content:"";position:absolute;left:50%;bottom:5px;transform:translateX(-50%);width:10px;height:3px;border-radius:2px;background:currentColor;opacity:.4}
+.finger-legend{display:flex;gap:14px;justify-content:center;flex-wrap:wrap;margin-top:12px;color:var(--sub);font-size:.8rem}
+.finger-legend span{display:inline-flex;align-items:center;gap:6px}
+.finger-legend i{width:14px;height:14px;border-radius:5px;display:inline-block}
+
+/* ---------- results overlay ---------- */
+.overlay{
+  position:fixed;inset:0;z-index:50;
+  background:rgba(43,58,103,.42);
+  display:flex;align-items:center;justify-content:center;padding:20px;
+}
+.result-card{
+  background:var(--card);border-radius:24px;border:2px solid var(--line);border-bottom-width:8px;
+  padding:34px 40px;text-align:center;max-width:460px;width:100%;
+  box-shadow:var(--shadow);position:relative;overflow:hidden;
+  animation:popIn .35s cubic-bezier(.34,1.56,.64,1);
+}
+@keyframes popIn{from{transform:scale(.7);opacity:0}to{transform:scale(1);opacity:1}}
+.result-stars{font-size:3rem;display:flex;justify-content:center;gap:8px;margin:8px 0 4px}
+.result-stars .s{opacity:.22;transform:scale(.6)}
+.result-stars .s.on{opacity:1;animation:starPop .5s cubic-bezier(.34,1.8,.64,1) forwards}
+.result-stars .s.on:nth-child(2){animation-delay:.18s}
+.result-stars .s.on:nth-child(3){animation-delay:.36s}
+@keyframes starPop{from{transform:scale(.4) rotate(-30deg)}to{transform:scale(1) rotate(0)}}
+.result-verdict{font-family:var(--display);font-weight:800;font-size:1.6rem;margin-top:2px}
+.result-stats{display:flex;justify-content:center;gap:12px;margin:18px 0 8px;flex-wrap:wrap}
+.result-note{color:var(--sub);font-size:.9rem;margin-top:4px}
+.result-card .row{display:flex;gap:10px;justify-content:center;margin-top:20px;flex-wrap:wrap}
+.confetti{position:absolute;top:-10px;width:10px;height:16px;border-radius:3px;animation:confFall 1.9s linear forwards;pointer-events:none}
+@keyframes confFall{to{transform:translateY(560px) rotate(660deg);opacity:.15}}
+
+/* ---------- games ---------- */
+.game-shell{margin-top:16px}
+.game-head{display:flex;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:14px}
+.game-head .titles{flex:1;min-width:180px}
+.game-stage{
+  position:relative;height:440px;border-radius:20px;overflow:hidden;
+  background:linear-gradient(180deg,#DFE9FF 0%,#F6E9FF 100%);
+  border:2px solid var(--line);border-bottom-width:6px;
+}
+.game-stage.night{background:linear-gradient(180deg,#232B52 0%,#4A3B7E 100%)}
+.game-hud{
+  position:absolute;top:10px;left:12px;right:12px;z-index:5;
+  display:flex;justify-content:space-between;align-items:center;gap:10px;
+  font-family:var(--display);font-weight:700;
+}
+.game-hud .pill{background:rgba(255,255,255,.88);border-radius:999px;padding:4px 14px;border:2px solid var(--line);font-size:.95rem}
+.game-hud .hearts{letter-spacing:2px}
+.fall-letter{
+  position:absolute;z-index:2;
+  font-family:var(--mono);font-weight:600;font-size:1.35rem;text-transform:uppercase;
+  width:46px;height:46px;border-radius:12px;
+  display:flex;align-items:center;justify-content:center;
+  background:#fff;border:2px solid var(--line);border-bottom-width:5px;color:var(--ink);
+  transition:opacity .2s;
+}
+.fall-letter.zap{background:var(--sun);border-color:#E0A824;transform:scale(1.35);opacity:0;transition:all .22s ease}
+.balloon{
+  position:absolute;z-index:2;text-align:center;width:110px;
+  transition:opacity .25s, transform .25s;
+}
+.balloon .body{
+  width:84px;height:98px;margin:0 auto;border-radius:50% 50% 48% 48%;
+  display:flex;align-items:center;justify-content:center;
+  border:2px solid rgba(43,58,103,.18);
+  box-shadow:inset -8px -10px 0 rgba(43,58,103,.08);
+}
+.balloon .string{width:2px;height:26px;background:rgba(43,58,103,.3);margin:0 auto}
+.balloon .word{
+  font-family:var(--mono);font-weight:600;font-size:1.02rem;
+  background:#fff;border-radius:8px;padding:2px 8px;border:2px solid var(--line);
+  display:inline-block;margin-top:2px;
+}
+.balloon .word .did{color:var(--mint);font-weight:700}
+.balloon.active .word{border-color:var(--sun);background:var(--sun-soft)}
+.balloon.pop{transform:scale(1.5);opacity:0}
+.race-track{position:absolute;inset:0}
+.race-lane{position:absolute;left:0;right:0;height:90px}
+.race-lane .road{position:absolute;left:20px;right:20px;top:58px;height:4px;border-radius:2px;background:rgba(43,58,103,.15)}
+.racer{position:absolute;font-size:2.6rem;transition:left .35s ease}
+#meR{transform:rotate(45deg)}
+.game-stage.night .race-lane .road{background:rgba(255,255,255,.28)}
+.race-word-zone{
+  position:absolute;left:0;right:0;bottom:0;padding:18px;text-align:center;z-index:6;
+  background:rgba(255,255,255,.9);border-top:2px solid var(--line);
+}
+.race-word{font-family:var(--mono);font-size:1.7rem;font-weight:600;letter-spacing:1px}
+.race-word .did{color:var(--mint)}
+.race-word .nxt{color:#A9B3D2}
+.race-upnext{color:var(--sub);font-size:.85rem;margin-top:4px}
+.game-over{
+  position:absolute;inset:0;z-index:8;display:flex;align-items:center;justify-content:center;
+  background:rgba(43,58,103,.45);
+}
+.game-msg{position:absolute;z-index:4;font-family:var(--display);font-weight:800;font-size:1.1rem;color:var(--coral-deep);animation:msgUp .8s ease forwards;pointer-events:none}
+@keyframes msgUp{to{transform:translateY(-34px);opacity:0}}
+
+/* ---------- progress screen ---------- */
+.prog-grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;margin-top:16px}
+.prog-tile{background:var(--card);border:2px solid var(--line);border-bottom-width:5px;border-radius:16px;padding:14px 16px;text-align:center}
+.prog-tile .v{font-family:var(--display);font-weight:800;font-size:1.6rem;font-variant-numeric:tabular-nums}
+.prog-tile .l{color:var(--sub);font-size:.75rem;text-transform:uppercase;letter-spacing:1px}
+.prog-section{background:var(--card);border:2px solid var(--line);border-bottom-width:6px;border-radius:20px;padding:20px 22px;margin-top:18px}
+.prog-table{width:100%;border-collapse:collapse;font-size:.92rem;margin-top:10px}
+.prog-table th{text-align:left;color:var(--sub);font-weight:700;font-size:.75rem;text-transform:uppercase;letter-spacing:1px;padding:6px 8px;border-bottom:2px solid var(--line)}
+.prog-table td{padding:7px 8px;border-bottom:1px solid var(--line);font-variant-numeric:tabular-nums}
+.prog-table tr:last-child td{border-bottom:none}
+.prog-table .mono{font-family:var(--mono);font-size:.85rem}
+.table-scroll{overflow-x:auto}
+.spark{display:flex;align-items:flex-end;gap:3px;height:90px;margin-top:10px}
+.spark i{flex:1;background:var(--berry);border-radius:4px 4px 0 0;min-height:4px;opacity:.85}
+.spark i.hi{background:var(--coral)}
+.parent-tips{color:var(--sub);font-size:.92rem;margin-top:10px}
+.parent-tips li{margin-top:6px}
+.danger-zone{margin-top:14px;display:flex;gap:10px;flex-wrap:wrap}
+
+/* ---------- certificate ---------- */
+.cert{
+  background:#FFFDF6;border:6px double var(--sun);border-radius:22px;
+  padding:44px 36px;text-align:center;margin-top:18px;
+  box-shadow:var(--shadow);
+}
+.cert .seal{font-size:3rem}
+.cert h2{font-size:2rem;margin-top:6px}
+.cert .cname{font-family:var(--display);font-weight:800;font-size:2.4rem;color:var(--coral-deep);margin:14px 0 4px}
+.cert .sub{color:var(--sub)}
+.cert .cstats{display:flex;justify-content:center;gap:26px;margin:20px 0;font-family:var(--display);font-weight:700}
+.cert .sig{margin-top:24px;color:var(--sub);font-size:.9rem}
+.cert .sig .owl-sig{font-family:var(--display);font-weight:700;font-size:1.1rem;color:var(--ink)}
+@media print{
+  body *{visibility:hidden}
+  #s-cert,#s-cert *{visibility:visible}
+  #s-cert{position:absolute;inset:0;padding:0}
+  #s-cert .no-print{display:none}
+  .cert{border-radius:0;box-shadow:none}
+}
+
+/* ---------- responsive ---------- */
+@media (max-width:720px){
+  .type-line{font-size:1.2rem}
+  .kb-key{height:40px;font-size:.8rem}
+  .hero h1{font-size:2rem}
+  main{padding:18px 12px 60px}
+  .unit{padding:16px}
+  .game-stage{height:380px}
+}
+@media (prefers-reduced-motion:reduce){
+  *,*::before,*::after{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}
+}
+</style>
+
+<header id="topbar">
+  <div class="logo" id="logoBtn" role="button" tabindex="0" title="Back to the quest map">
+    <span class="logo-key">⌨️</span> TypeQuest
+  </div>
+  <div class="right">
+    <span class="star-pill hidden" id="starTotal">⭐ <span id="starCount">0</span></span>
+    <button class="icon-btn" id="soundBtn" title="Sound on or off">🔊</button>
+    <button class="icon-btn hidden" id="progressBtn" title="Progress for grown-ups">📈</button>
+    <button class="chip hidden" id="profileChip" title="Switch typist">
+      <span class="avatar" id="chipAvatar">🙂</span><span id="chipName">Choose</span>
+    </button>
+  </div>
+</header>
+
+<main>
+  <section class="screen" id="s-profiles"></section>
+  <section class="screen hidden" id="s-map"></section>
+  <section class="screen hidden" id="s-lesson"></section>
+  <section class="screen hidden" id="s-game"></section>
+  <section class="screen hidden" id="s-progress"></section>
+  <section class="screen hidden" id="s-cert"></section>
+</main>
+
+<div id="modalRoot"></div>
+<div id="overlayRoot"></div>
+
+<script>
+"use strict";
+// ===DATA===
+
+/* ---------------- keyboard geometry & fingers ---------------- */
+const KB_ROWS = [
+  [{k:"`",s:"~"},{k:"1",s:"!"},{k:"2",s:"@"},{k:"3",s:"#"},{k:"4",s:"$"},{k:"5",s:"%"},{k:"6",s:"^"},{k:"7",s:"&"},{k:"8",s:"*"},{k:"9",s:"("},{k:"0",s:")"},{k:"-",s:"_"},{k:"=",s:"+"},{k:"Backspace",label:"back",cls:"wide"}],
+  [{k:"Tab",label:"tab",cls:"wide"},{k:"q"},{k:"w"},{k:"e"},{k:"r"},{k:"t"},{k:"y"},{k:"u"},{k:"i"},{k:"o"},{k:"p"},{k:"[",s:"{"},{k:"]",s:"}"},{k:"\\",s:"|"}],
+  [{k:"Caps",label:"caps",cls:"wide"},{k:"a"},{k:"s"},{k:"d"},{k:"f",bump:true},{k:"g"},{k:"h"},{k:"j",bump:true},{k:"k"},{k:"l"},{k:";",s:":"},{k:"'",s:"\""},{k:"Enter",label:"enter",cls:"xwide"}],
+  [{k:"ShiftL",label:"shift",cls:"xwide"},{k:"z"},{k:"x"},{k:"c"},{k:"v"},{k:"b"},{k:"n"},{k:"m"},{k:",",s:"<"},{k:".",s:">"},{k:"/",s:"?"},{k:"ShiftR",label:"shift",cls:"xwide"}],
+  [{k:" ",label:"space",cls:"space"}]
+];
+// finger class per key
+const FINGERS = {
+  "`":"pinky","1":"pinky","2":"ring","3":"mid","4":"index","5":"index",
+  "6":"index","7":"index","8":"mid","9":"ring","0":"pinky","-":"pinky","=":"pinky",
+  "q":"pinky","w":"ring","e":"mid","r":"index","t":"index",
+  "y":"index","u":"index","i":"mid","o":"ring","p":"pinky","[":"pinky","]":"pinky","\\":"pinky",
+  "a":"pinky","s":"ring","d":"mid","f":"index","g":"index",
+  "h":"index","j":"index","k":"mid","l":"ring",";":"pinky","'":"pinky",
+  "z":"pinky","x":"ring","c":"mid","v":"index","b":"index",
+  "n":"index","m":"index",",":"mid",".":"ring","/":"pinky",
+  " ":"thumb","Tab":"pinky","Caps":"pinky","ShiftL":"pinky","ShiftR":"pinky","Enter":"pinky","Backspace":"pinky"
+};
+const FINGER_NAMES = {pinky:"pinky",ring:"ring finger",mid:"middle finger",index:"pointer",thumb:"thumb"};
+// which hand a character belongs to (to pick the opposite shift)
+const LEFT_KEYS = "`12345qwertasdfgzxcvb";
+// shifted symbol -> base key
+const SHIFT_MAP = {};
+KB_ROWS.flat().forEach(K=>{ if(K.s) SHIFT_MAP[K.s]=K.k; });
+
+/* ---------------- curriculum ---------------- */
+const AVATARS = ["🦊","🐸","🦄","🐧","🐯","🐙","🦖","🐝","🐼","🚀","🌟","🍉"];
+
+const UNITS = [
+{
+  id:"u1", name:"Home Row Harbor", icon:"🏝️", wpm3:8,
+  blurb:"Where your fingers live! Learn the resting keys.",
+  lessons:[
+    {id:"l1", title:"F and J", newKeys:["f","j"],
+      tip:"Feel the little bumps on <b>F</b> and <b>J</b>? Your pointer fingers rest there. Eyes on the screen — not on your hands!",
+      lines:["fff jjj fff jjj","fj jf fj jf fjf jfj","jjf ffj jf fj fjfj"]},
+    {id:"l2", title:"D and K", newKeys:["d","k"],
+      tip:"Middle fingers press <b>D</b> and <b>K</b>. Tap the key, then float right back home.",
+      lines:["ddd kkk ddd kkk","dk kd dkd kdk dk kd","fd jk dk fj kd dkfj"]},
+    {id:"l3", title:"S and L", newKeys:["s","l"],
+      tip:"Ring fingers are a little shy — give them a job on <b>S</b> and <b>L</b>.",
+      lines:["sss lll sss lll","sl ls sls lsl ss ll","sd kl fs jl sk ld"]},
+    {id:"l4", title:"A and ;", newKeys:["a",";"],
+      tip:"Pinkies take <b>A</b> and <b>;</b>. Small fingers, big job!",
+      lines:["aaa ;;; aaa ;;;","a; ;a a;a ;a; aa ;;","as ;l af ;j ad ;k"]},
+    {id:"l5", title:"Home Row Mix", newKeys:[],
+      tip:"All eight resting keys together. Slow and smooth beats fast and sloppy.",
+      lines:["asdf jkl; asdf jkl;","aj sk dl f; aj sk dl","dad sad fall lass all"]},
+    {id:"l6", title:"G and H", newKeys:["g","h"],
+      tip:"Pointers stretch inward for <b>G</b> and <b>H</b> — then hop back to F and J.",
+      lines:["ggg hhh ggg hhh","fgf jhj gh hg gfg hjh","gas has hag sag gag dash"]},
+    {id:"l7", title:"Home Row Words", newKeys:[],
+      tip:"Real words with only home row keys. You are already typing!",
+      lines:["ask dad; dad has a flag","a lad shall add a glass","a glad lass has a salad"]}
+  ],
+  game:"rain"
+},
+{
+  id:"u2", name:"Top Row Trail", icon:"⛰️", wpm3:10,
+  blurb:"Reach up! Vowels and friends live upstairs.",
+  lessons:[
+    {id:"l8", title:"E and I", newKeys:["e","i"],
+      tip:"Middle fingers reach up for <b>E</b> and <b>I</b> — the busiest letters in English!",
+      lines:["ded kik ded kik ee ii","ei ie eie iei dei kie","did lie side seas like"]},
+    {id:"l9", title:"R and U", newKeys:["r","u"],
+      tip:"Pointers reach up for <b>R</b> and <b>U</b>.",
+      lines:["frf juj frf juj rr uu","ru ur rur uru fru jur","sure rude fur ride user"]},
+    {id:"l10", title:"T and Y", newKeys:["t","y"],
+      tip:"Big stretch! Pointers travel for <b>T</b> and <b>Y</b>, then home again.",
+      lines:["ftf jyj ftf jyj tt yy","ty yt tyt yty fty jyt","try stay salty yes dusty"]},
+    {id:"l11", title:"W and O", newKeys:["w","o"],
+      tip:"Ring fingers up for <b>W</b> and <b>O</b>.",
+      lines:["sws lol sws lol ww oo","wo ow wow owl low sow","wow slow world would work"]},
+    {id:"l12", title:"Q and P", newKeys:["q","p"],
+      tip:"Pinkies reach for <b>Q</b> and <b>P</b> — the top row corners.",
+      lines:["aqa ;p; aqa ;p; qq pp","qu ip quip quit pat pit","pat props up a quiet quilt"]},
+    {id:"l13", title:"Two Row Words", newKeys:[],
+      tip:"Home row plus top row = hundreds of words!",
+      lines:["we like to play outside","you are so happy today","the water is quite deep"]},
+    {id:"l14", title:"Trail Sprint", newKeys:[],
+      tip:"Everything you know so far. Steady rhythm, like a drum: tap, tap, tap.",
+      lines:["tell us a story out loud","your dog likes the grass","we go up the hill to play"]}
+  ],
+  game:"pop"
+},
+{
+  id:"u3", name:"Bottom Row Bay", icon:"🌊", wpm3:12,
+  blurb:"Dive down for the last letters of the alphabet.",
+  lessons:[
+    {id:"l15", title:"V and N", newKeys:["v","n"],
+      tip:"Pointers dive down for <b>V</b> and <b>N</b>.",
+      lines:["fvf jnj fvf jnj vv nn","vn nv vnv nvn fvn jnv","van vine nine seven never"]},
+    {id:"l16", title:"B and M", newKeys:["b","m"],
+      tip:"Another pointer stretch for <b>B</b>, and <b>M</b> for the right hand.",
+      lines:["fbf jmj fbf jmj bb mm","bm mb bmb mbm fbm jmb","my mom made a big meal"]},
+    {id:"l17", title:"C and Comma", newKeys:["c",","],
+      tip:"Middle fingers down for <b>C</b> and <b>,</b> — commas give sentences a rest.",
+      lines:["dcd k,k dcd k,k cc ,,","cat can cool nice city,","we can cook, we can code"]},
+    {id:"l18", title:"X and Period", newKeys:["x","."],
+      tip:"Ring fingers down for <b>X</b> and <b>.</b> — every sentence ends with one.",
+      lines:["sxs l.l sxs l.l xx ..","box fox six mix wax.","the fox sat in a box."]},
+    {id:"l19", title:"Z and Slash", newKeys:["z","/"],
+      tip:"Pinkies down for <b>Z</b> and <b>/</b>. That completes the alphabet!",
+      lines:["aza ;/; aza ;/; zz //","zip zoom zebra buzz jazz","bees buzz. zebras zoom."]},
+    {id:"l20", title:"Alphabet Round Up", newKeys:[],
+      tip:"This sentence uses every letter A to Z. A true typing test!",
+      lines:["the quick brown fox jumps over the lazy dog","we explore amazing lands very quickly"]}
+  ],
+  game:"race"
+},
+{
+  id:"u4", name:"Capital City", icon:"🏰", wpm3:12,
+  blurb:"Big letters and punctuation make real writing.",
+  lessons:[
+    {id:"l21", title:"Left Hand Capitals", newKeys:["ShiftR"],
+      tip:"Hold the <b>right shift</b> with your right pinky while the left hand types the letter. Two hands, one capital!",
+      lines:["Aa Ss Dd Ff Gg","Tt Rr Ee Ww Qq","Fred Sam Dave Tess Greg"]},
+    {id:"l22", title:"Right Hand Capitals", newKeys:["ShiftL"],
+      tip:"Now hold the <b>left shift</b> with your left pinky for right-hand letters.",
+      lines:["Jj Kk Ll Hh Yy","Uu Ii Oo Pp Nn Mm","Jill Kim Owen Uma Holly"]},
+    {id:"l23", title:"Real Sentences", newKeys:[],
+      tip:"Capital at the start, period at the end. You are writing for real now.",
+      lines:["We ride bikes. We fly kites.","Mom, Dad, and I bake bread.","First we read, then we play."]},
+    {id:"l24", title:"Questions and Wow!", newKeys:["?","!"],
+      tip:"<b>?</b> is shift plus slash. <b>!</b> is shift plus 1 — way up top with your pinky.",
+      lines:["Who? What? When? Where?","Wow! Look out! That is fun!","Can you type fast? Yes, I can!"]},
+    {id:"l25", title:"Quotes and Apostrophes", newKeys:["'","\""],
+      tip:"Your right pinky owns the <b>'</b> key. Add shift for <b>\"</b> quotes.",
+      lines:["it's don't can't I'm we're","\"Hello,\" said the owl.","It's Ben's turn. Don't stop!"]},
+    {id:"l26", title:"City Review", newKeys:[],
+      tip:"Everything together — capitals, commas, questions, quotes.",
+      lines:["Dr. Lee asked, \"Are you ready?\"","Yes! We're ready to type.","Great job, team. Keep going!"]}
+  ]
+},
+{
+  id:"u5", name:"Number Mountain", icon:"🔢", wpm3:12,
+  blurb:"Climb to the number row at the very top.",
+  lessons:[
+    {id:"l27", title:"1, 2 and 3", newKeys:["1","2","3"],
+      tip:"Left hand climbs: pinky to <b>1</b>, ring to <b>2</b>, middle to <b>3</b>.",
+      lines:["a1a s2s d3d 11 22 33","12 23 31 123 321 213","I am 12. My cat is 3."]},
+    {id:"l28", title:"4, 5, 6 and 7", newKeys:["4","5","6","7"],
+      tip:"Pointers do double duty: left takes <b>4</b> and <b>5</b>, right takes <b>6</b> and <b>7</b>.",
+      lines:["f4f f5f j6j j7j 45 67","44 55 66 77 4567 7654","We saw 47 birds and 56 ants."]},
+    {id:"l29", title:"8, 9 and 0", newKeys:["8","9","0"],
+      tip:"Right hand climbs: middle to <b>8</b>, ring to <b>9</b>, pinky to <b>0</b>.",
+      lines:["k8k l9l ;0; 88 99 00","89 90 80 890 908 809","I count from 10 to 90."]},
+    {id:"l30", title:"Numbers in the Wild", newKeys:[],
+      tip:"Numbers mixed into real sentences — just like homework!",
+      lines:["There are 365 days in 1 year.","A spider has 8 legs, not 6.","We read 20 pages in 15 minutes."]}
+  ]
+},
+{
+  id:"u6", name:"Word Wizard Woods", icon:"🌲", wpm3:16,
+  blurb:"Speed grows here. Common words become automatic.",
+  lessons:[
+    {id:"l31", title:"Speedy Small Words", newKeys:[],
+      tip:"These tiny words are everywhere. Make them automatic — no thinking, just typing!",
+      lines:["the and you for are but not","can had her was one our out","day get has him his how new"]},
+    {id:"l32", title:"Letter Teams", newKeys:[],
+      tip:"<b>th</b>, <b>ch</b>, <b>sh</b> — letters that love to travel together.",
+      lines:["th the this that then them","ch chip chat much such each","sh shop ship wish when what"]},
+    {id:"l33", title:"Double Trouble", newKeys:[],
+      tip:"Double letters! Same finger, two quick taps.",
+      lines:["see less good will book keep","tree small happy little sleep","the little rabbit will sleep soon"]},
+    {id:"l34", title:"Silly Sentences", newKeys:[],
+      tip:"Silly sentences are the best sentences. Type them with a smile.",
+      lines:["a purple moose ate my homework","the dancing robot lost a shoe","my pizza sings on sunny days"]},
+    {id:"l35", title:"Wise Words", newKeys:[],
+      tip:"Old sayings people have typed (and written) for ages.",
+      lines:["practice makes perfect every day","slow and steady wins the race","look before you leap, my friend"]}
+  ]
+},
+{
+  id:"u7", name:"Story Summit", icon:"🏔️", wpm3:20,
+  blurb:"The peak! Whole paragraphs, timed runs, and your diploma.",
+  lessons:[
+    {id:"l36", title:"Busy Bees", newKeys:[], mode:"para",
+      tip:"A whole paragraph about bees. Take a breath, find your rhythm.",
+      lines:["Honeybees dance to tell their friends where flowers grow. A bee may visit one hundred flowers on a single trip. People have loved honey for thousands of years."]},
+    {id:"l37", title:"Space Facts", newKeys:[], mode:"para",
+      tip:"Blast off! Type your way through the solar system.",
+      lines:["The sun is a star at the center of our solar system. Light from the sun takes about eight minutes to reach Earth. Jupiter is so big that one thousand Earths could fit inside it."]},
+    {id:"l38", title:"Long Ago", newKeys:[], mode:"para",
+      tip:"A little history. Scribes copied books by hand — you can type faster than any of them.",
+      lines:["Long ago, people wrote on clay tablets and rolled up scrolls. The printing press changed the world in 1440. Today you can type words faster than any scribe from long ago."]},
+    {id:"l39", title:"One Minute Dash", newKeys:[], mode:"timed", seconds:60, starsWpm:[12,18,25],
+      tip:"Type as much as you can in one minute. Accuracy still counts!"},
+    {id:"l40", title:"Accuracy Master", newKeys:[], mode:"acc", starsAcc:[94,97,99],
+      tip:"Forget speed. This one is about being <b>perfect</b>. Slow down and hit every key.",
+      lines:["The careful typist checks each key before pressing it.","Quiet focus beats quick fingers every single time."]},
+    {id:"l41", title:"Graduation Run", newKeys:[], mode:"timed", seconds:120, starsWpm:[14,20,28],
+      tip:"Two whole minutes — everything you have learned. Finish this and earn your certificate!"}
+  ]
+}
+];
+
+const ALL_LESSONS = UNITS.flatMap(u=>u.lessons.map(l=>({...l, unit:u})));
+const LESSON_INDEX = Object.fromEntries(ALL_LESSONS.map((l,i)=>[l.id,i]));
+
+/* sentence pool for timed tests */
+const TIMED_POOL = [
+  "The quick brown fox jumps over the lazy dog.",
+  "We packed six bags for the long trip north.",
+  "My friend can juggle five red apples at once.",
+  "The little boat sailed across the quiet lake.",
+  "Every good story needs a brave hero and a plan.",
+  "Ten small ducks marched down to the pond today.",
+  "She drew a map of the stars on blue paper.",
+  "The happy dog dug a big hole in the garden.",
+  "We baked fresh bread and shared it with everyone.",
+  "A gentle rain fell on the roof all night long."
+];
+
+/* word pools for games, keyed by difficulty */
+const GAME_WORDS = {
+  easy:["as","ad","all","ask","dad","sad","lad","fall","glad","hall","gas","has","flag","salad","dash"],
+  medium:["like","ride","true","stay","play","word","work","quiet","water","paper","house","story","happy","world","today","sunny","tiger","river"],
+  hard:["jungle","wizard","rocket","planet","zigzag","puzzle","branch","voyage","crayon","magnet","bounce","expert","frozen","kingdom","whisper","javelin"]
+};
+const BALLOON_COLORS = ["#FFD1DC","#C9E4FF","#FFE9B8","#D6F5E3","#E8DEFF","#FFDFC9"];
+
+/* which games exist */
+const GAMES = {
+  rain:{id:"rain", name:"Letter Rain", icon:"🌧️", unit:"u1",
+    how:"Letters fall from the sky. Press the matching key to zap them before they splash down! Three misses and the round ends."},
+  pop:{id:"pop", name:"Balloon Pop", icon:"🎈", unit:"u2",
+    how:"Balloons float up carrying words. Type a word letter by letter to pop its balloon. Don't let three balloons float away!"},
+  race:{id:"race", name:"Rocket Race", icon:"🚀", unit:"u3",
+    how:"Type each word to fuel your rocket in a 45 second race against Robo-Rocket. Finish the word, zoom ahead!"}
+};
+
+
+// ===CORE===
+
+/* ---------------- state & persistence ---------------- */
+const SAVE_KEY = "typequest.v1";
+let state = load();
+function load(){
+  try{
+    const raw = localStorage.getItem(SAVE_KEY);
+    if(raw){ const s = JSON.parse(raw); if(s && s.profiles) return s; }
+  }catch(e){}
+  return {profiles:[], activeId:null, muted:false};
+}
+function save(){ try{ localStorage.setItem(SAVE_KEY, JSON.stringify(state)); }catch(e){} }
+function me(){ return state.profiles.find(p=>p.id===state.activeId) || null; }
+function newProfile(name, avatar){
+  return {id:"p"+Date.now()+Math.floor(Math.random()*999), name, avatar,
+    progress:{}, scores:{}, history:[]};
+}
+function lessonRec(p, id){ return p.progress[id] || null; }
+function starsOf(p, id){ const r=lessonRec(p,id); return r? r.stars:0; }
+function totalStars(p){ return ALL_LESSONS.reduce((n,l)=>n+starsOf(p,l.id),0); }
+function isLessonUnlocked(p, id){
+  const i = LESSON_INDEX[id];
+  if(i===0) return true;
+  return starsOf(p, ALL_LESSONS[i-1].id) >= 1;
+}
+function isUnitComplete(p, unit){ return unit.lessons.every(l=>starsOf(p,l.id)>=1); }
+function isGameUnlocked(p, gameId){
+  const unit = UNITS.find(u=>u.id===GAMES[gameId].unit);
+  return isUnitComplete(p, unit);
+}
+function learnedKeys(p){
+  const keys = new Set();
+  for(const l of ALL_LESSONS){
+    if(starsOf(p,l.id)>=1) l.newKeys.forEach(k=>{ if(k.length===1) keys.add(k); });
+    else break;
+  }
+  ["f","j"].forEach(k=>keys.add(k));
+  return [...keys].filter(k=>/[a-z]/.test(k));
+}
+function gameDifficulty(p){
+  const done = ALL_LESSONS.filter(l=>starsOf(p,l.id)>=1).length;
+  if(done>=20) return "hard";
+  if(done>=13) return "medium";
+  return "easy";
+}
+
+/* ---------------- tiny sound engine ---------------- */
+let AC=null;
+function ac(){ if(!AC){ try{ AC = new (window.AudioContext||window.webkitAudioContext)(); }catch(e){} } return AC; }
+function tone(freq, dur, type, vol, when){
+  if(state.muted) return;
+  const ctx = ac(); if(!ctx) return;
+  const t = ctx.currentTime + (when||0);
+  const o = ctx.createOscillator(), g = ctx.createGain();
+  o.type = type||"sine"; o.frequency.value = freq;
+  g.gain.setValueAtTime(vol||0.08, t);
+  g.gain.exponentialRampToValueAtTime(0.0001, t+dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(t); o.stop(t+dur+0.02);
+}
+const sfx = {
+  tap(){ tone(720, .05, "sine", .05); },
+  err(){ tone(140, .12, "square", .06); },
+  line(){ tone(520,.08,"sine",.07); tone(780,.1,"sine",.07,.08); },
+  star(n){ [523,659,784,1047].slice(0,n+1).forEach((f,i)=>tone(f,.16,"triangle",.09,i*.12)); },
+  pop(){ tone(880,.07,"triangle",.09); tone(1320,.05,"sine",.06,.05); },
+  zap(){ tone(980,.06,"sawtooth",.05); },
+  lose(){ tone(300,.15,"square",.07); tone(220,.2,"square",.07,.13); },
+  win(){ [523,659,784,1047,1319].forEach((f,i)=>tone(f,.18,"triangle",.09,i*.11)); }
+};
+
+/* ---------------- screen router ---------------- */
+const SCREENS = ["s-profiles","s-map","s-lesson","s-game","s-progress","s-cert"];
+function showScreen(id){
+  SCREENS.forEach(s=>document.getElementById(s).classList.toggle("hidden", s!==id));
+  window.scrollTo(0,0);
+}
+function el(html){
+  const t = document.createElement("template");
+  t.innerHTML = html.trim();
+  return t.content.firstElementChild;
+}
+function esc(s){ return s.replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/"/g,"&quot;"); }
+
+function refreshTopbar(){
+  const p = me();
+  document.getElementById("starTotal").classList.toggle("hidden", !p);
+  document.getElementById("progressBtn").classList.toggle("hidden", !p);
+  document.getElementById("profileChip").classList.toggle("hidden", !p);
+  document.getElementById("soundBtn").textContent = state.muted ? "🔇" : "🔊";
+  if(p){
+    document.getElementById("starCount").textContent = totalStars(p);
+    document.getElementById("chipAvatar").textContent = p.avatar;
+    document.getElementById("chipName").textContent = p.name;
+  }
+}
+
+/* ---------------- profiles screen ---------------- */
+function renderProfiles(){
+  const root = document.getElementById("s-profiles");
+  root.innerHTML = "";
+  const hero = el(`<div class="hero">
+    <span class="mascot">🦉</span>
+    <h1>TypeQuest</h1>
+    <p>A typing adventure for home learners. Professor Hoot will guide your fingers from the Home Row Harbor all the way to Story Summit — with games along the way!</p>
+  </div>`);
+  root.appendChild(hero);
+  const grid = el(`<div class="profile-grid"></div>`);
+  state.profiles.forEach(p=>{
+    const card = el(`<button class="profile-card">
+      <span class="avatar">${p.avatar}</span>
+      <span class="name">${esc(p.name)}</span>
+      <span class="meta">⭐ ${totalStars(p)} stars</span>
+    </button>`);
+    card.addEventListener("click", ()=>{ state.activeId=p.id; save(); refreshTopbar(); renderMap(); showScreen("s-map"); });
+    grid.appendChild(card);
+  });
+  const add = el(`<button class="profile-card new">
+    <span class="avatar">➕</span>
+    <span class="name">New typist</span>
+    <span class="meta">Join the quest</span>
+  </button>`);
+  add.addEventListener("click", openNewProfileModal);
+  grid.appendChild(add);
+  root.appendChild(grid);
+  root.appendChild(el(`<p class="kbd-note">💡 TypeQuest needs a real keyboard — a laptop or a computer with a keyboard plugged in.</p>`));
+}
+function openNewProfileModal(){
+  const wrap = el(`<div class="modal-wrap"><div class="modal">
+    <h2>Who is typing?</h2>
+    <p style="color:var(--sub)">Pick a buddy and tell us your name.</p>
+    <div class="avatar-picker"></div>
+    <input class="name-input" maxlength="16" placeholder="Your name" aria-label="Your name">
+    <div class="row">
+      <button class="keycap ghost" data-x="cancel">Cancel</button>
+      <button class="keycap primary" data-x="go">Start my quest!</button>
+    </div>
+  </div></div>`);
+  const picker = wrap.querySelector(".avatar-picker");
+  let chosen = AVATARS[0];
+  AVATARS.forEach((a,i)=>{
+    const b = el(`<button class="avatar-opt${i===0?" sel":""}">${a}</button>`);
+    b.addEventListener("click", ()=>{
+      picker.querySelectorAll(".avatar-opt").forEach(x=>x.classList.remove("sel"));
+      b.classList.add("sel"); chosen=a;
+    });
+    picker.appendChild(b);
+  });
+  const input = wrap.querySelector(".name-input");
+  const go = ()=>{
+    const name = input.value.trim() || "Typist";
+    const p = newProfile(name, chosen);
+    state.profiles.push(p); state.activeId = p.id; save();
+    wrap.remove(); refreshTopbar(); renderMap(); showScreen("s-map");
+  };
+  wrap.querySelector('[data-x="cancel"]').addEventListener("click", ()=>wrap.remove());
+  wrap.querySelector('[data-x="go"]').addEventListener("click", go);
+  input.addEventListener("keydown", e=>{ if(e.key==="Enter") go(); });
+  document.getElementById("modalRoot").appendChild(wrap);
+  input.focus();
+}
+
+/* ---------------- quest map ---------------- */
+function renderMap(){
+  const p = me(); if(!p) return;
+  const root = document.getElementById("s-map");
+  root.innerHTML = "";
+  const done = ALL_LESSONS.filter(l=>starsOf(p,l.id)>=1).length;
+  root.appendChild(el(`<div class="map-head">
+    <div>
+      <h1>${p.avatar} ${esc(p.name)}'s Quest</h1>
+      <p>${done} of ${ALL_LESSONS.length} lessons complete. ${done===ALL_LESSONS.length?"You did it all! 🎉":"Keep going — the summit awaits!"}</p>
+    </div>
+  </div>`));
+  if(starsOf(p,"l41")>=1){
+    const btn = el(`<button class="keycap sunny big">🎓 View your certificate</button>`);
+    btn.addEventListener("click", ()=>{ renderCert(); showScreen("s-cert"); });
+    root.querySelector(".map-head").appendChild(btn);
+  }
+  let nextId = null;
+  for(const l of ALL_LESSONS){ if(starsOf(p,l.id)<1){ nextId=l.id; break; } }
+  let prevUnitDone = true;
+  UNITS.forEach(unit=>{
+    const unitUnlocked = prevUnitDone || unit.lessons.some(l=>isLessonUnlocked(p,l.id));
+    const uStars = unit.lessons.reduce((n,l)=>n+starsOf(p,l.id),0);
+    const uMax = unit.lessons.length*3;
+    const sec = el(`<section class="unit${unitUnlocked?"":" locked"}">
+      <div class="unit-head">
+        <span class="u-icon">${unit.icon}</span>
+        <div class="u-titles">
+          <h2>${unit.name}</h2>
+          <div class="u-sub">${unit.blurb}</div>
+        </div>
+        <span class="unit-stars">⭐ ${uStars}/${uMax}</span>
+      </div>
+      <div class="lesson-flow"></div>
+    </section>`);
+    const flow = sec.querySelector(".lesson-flow");
+    unit.lessons.forEach((l,i)=>{
+      if(i>0) flow.appendChild(el(`<span class="flow-link">· ·</span>`));
+      const unlocked = isLessonUnlocked(p,l.id);
+      const st = starsOf(p,l.id);
+      const label = l.newKeys.length && l.newKeys[0].length===1
+        ? l.newKeys.slice(0,2).join("").toUpperCase()
+        : (l.mode==="timed"?"⏱":l.mode==="acc"?"🎯":l.mode==="para"?"📖":"✦");
+      const cls = !unlocked ? "locked" : st>0 ? "done" : "next";
+      const node = el(`<button class="lesson-node ${cls}" title="${esc(l.title)}" ${unlocked?"":"disabled"}>
+        ${unlocked ? label : "🔒"}
+        ${st>0?`<span class="stars">${"⭐".repeat(st)}</span>`:""}
+      </button>`);
+      if(unlocked && l.id!==nextId) node.classList.remove("next");
+      if(unlocked && l.id===nextId) node.classList.add("next");
+      if(unlocked) node.addEventListener("click", ()=>startLesson(l.id));
+      flow.appendChild(node);
+    });
+    if(unit.game){
+      const g = GAMES[unit.game];
+      const open = isGameUnlocked(p, g.id);
+      const hs = p.scores[g.id];
+      flow.appendChild(el(`<span class="flow-link">· ·</span>`));
+      const node = el(`<button class="game-node${open?"":" locked"}" ${open?"":"disabled"}>
+        <span>${open?g.icon:"🔒"}</span> ${g.name}
+        ${open&&hs?`<span class="hs">best ${hs}</span>`:""}
+      </button>`);
+      if(open) node.addEventListener("click", ()=>startGame(g.id));
+      flow.appendChild(node);
+    }
+    prevUnitDone = isUnitComplete(p, unit);
+    root.appendChild(sec);
+  });
+}
+
+/* ---------------- lesson engine ---------------- */
+const lesson = {active:false};
+function buildLessonText(l){
+  if(l.mode==="timed"){
+    const pool=[...TIMED_POOL];
+    for(let i=pool.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [pool[i],pool[j]]=[pool[j],pool[i]]; }
+    const reps=[]; while(reps.join(" ").length < 1200) reps.push(pool[reps.length%pool.length]);
+    return [reps.join(" ")];
+  }
+  return l.lines.slice();
+}
+function startLesson(id){
+  const l = ALL_LESSONS.find(x=>x.id===id);
+  const p = me(); if(!l||!p) return;
+  lesson.active = true;
+  lesson.def = l;
+  lesson.lines = buildLessonText(l);
+  lesson.lineIdx = 0;
+  lesson.pos = 0;
+  lesson.correct = 0;
+  lesson.errors = 0;
+  lesson.startedAt = null;
+  lesson.finished = false;
+  lesson.totalChars = lesson.lines.reduce((n,s)=>n+s.length,0);
+  lesson.timeLeft = l.seconds || null;
+  renderLessonScreen();
+  showScreen("s-lesson");
+  if(lesson.timer) clearInterval(lesson.timer);
+  lesson.timer = setInterval(tickLesson, 250);
+}
+function renderLessonScreen(){
+  const l = lesson.def;
+  const root = document.getElementById("s-lesson");
+  const isTimed = l.mode==="timed";
+  const nk = l.newKeys.map(k=>{
+    const label = k==="ShiftL"||k==="ShiftR" ? "shift" : k===" " ? "space" : k;
+    return `<span class="nk">${esc(label)}</span>`;
+  }).join("");
+  root.innerHTML = `
+    <div class="lesson-top">
+      <button class="keycap ghost" id="backBtn">← Map</button>
+      <div class="titles">
+        <div class="crumbs">${l.unit.icon} ${l.unit.name}</div>
+        <h2>${esc(l.title)}</h2>
+      </div>
+      <div class="line-dots" id="lineDots"></div>
+    </div>
+    <div class="coach">
+      <span class="owl" aria-hidden="true">🦉</span>
+      <div class="say"><b>Professor Hoot:</b> ${l.tip}${nk?`<span class="newkeys">${nk}</span>`:""}</div>
+    </div>
+    <div class="type-card${isTimed?" tall":""}" id="typeCard">
+      <div class="type-line" id="typeLine"></div>
+      <div class="next-line" id="nextLine"></div>
+    </div>
+    <div class="stats-row">
+      ${isTimed?`<div class="stat timer"><div class="v" id="stTime">${l.seconds}</div><div class="l">seconds</div></div>`:""}
+      <div class="stat"><div class="v" id="stWpm">0</div><div class="l">wpm</div></div>
+      <div class="stat"><div class="v" id="stAcc">100</div><div class="l">% accuracy</div></div>
+      <div class="progressbar" aria-hidden="true"><i id="stBar"></i></div>
+    </div>
+    <div class="kb" id="kb"></div>
+    <div class="finger-legend">
+      <span><i style="background:var(--f-pinky)"></i>pinky</span>
+      <span><i style="background:var(--f-ring)"></i>ring</span>
+      <span><i style="background:var(--f-mid)"></i>middle</span>
+      <span><i style="background:var(--f-index)"></i>pointer</span>
+      <span><i style="background:var(--f-thumb)"></i>thumb</span>
+    </div>`;
+  document.getElementById("backBtn").addEventListener("click", exitLesson);
+  renderKeyboard();
+  renderLineDots();
+  renderTypeLine();
+}
+function renderLineDots(){
+  const dots = document.getElementById("lineDots");
+  if(!dots) return;
+  if(lesson.def.mode==="timed"||lesson.def.mode==="para"||lesson.lines.length<2){ dots.innerHTML=""; return; }
+  dots.innerHTML = lesson.lines.map((_,i)=>
+    `<span class="${i<lesson.lineIdx?"done":i===lesson.lineIdx?"cur":""}"></span>`).join("");
+}
+function renderTypeLine(){
+  const line = lesson.lines[lesson.lineIdx];
+  const wrap = document.getElementById("typeLine");
+  const words = line.split(" ");
+  let idx = 0, html = "";
+  words.forEach((w,wi)=>{
+    let inner = "";
+    for(const ch of w){
+      inner += `<span class="c" data-i="${idx}">${ch==="&"?"&amp;":ch==="<"?"&lt;":esc(ch)}</span>`;
+      idx++;
+    }
+    html += `<span class="w">${inner}</span>`;
+    if(wi<words.length-1){
+      html += `<span class="c sp" data-i="${idx}">&nbsp;</span>`;
+      idx++;
+    }
+  });
+  wrap.innerHTML = html;
+  paintTypeLine();
+  const nl = document.getElementById("nextLine");
+  const nxt = lesson.lines[lesson.lineIdx+1];
+  nl.textContent = (lesson.def.mode!=="timed" && nxt) ? "next: "+nxt : "";
+}
+function paintTypeLine(){
+  const wrap = document.getElementById("typeLine");
+  wrap.querySelectorAll(".c").forEach(span=>{
+    const i = +span.dataset.i;
+    span.classList.toggle("ok", i<lesson.pos);
+    span.classList.toggle("cur", i===lesson.pos);
+    span.classList.remove("err");
+  });
+  const cur = wrap.querySelector(".c.cur");
+  if(cur && cur.scrollIntoView) cur.scrollIntoView({block:"nearest"});
+  highlightKeys();
+  updateStats();
+}
+function expectedChar(){
+  const line = lesson.lines[lesson.lineIdx];
+  return line[lesson.pos];
+}
+function highlightKeys(){
+  document.querySelectorAll(".kb-key.hit").forEach(k=>k.classList.remove("hit"));
+  if(lesson.finished) return;
+  const ch = expectedChar();
+  if(ch==null) return;
+  let base = ch, needShift = false;
+  if(/[A-Z]/.test(ch)){ base = ch.toLowerCase(); needShift = true; }
+  else if(SHIFT_MAP[ch]){ base = SHIFT_MAP[ch]; needShift = true; }
+  const baseEl = document.querySelector(`.kb-key[data-k="${CSS.escape(base)}"]`);
+  if(baseEl) baseEl.classList.add("hit");
+  if(needShift){
+    const shiftKey = LEFT_KEYS.includes(base) ? "ShiftR" : "ShiftL";
+    const sEl = document.querySelector(`.kb-key[data-k="${shiftKey}"]`);
+    if(sEl) sEl.classList.add("hit");
+  }
+}
+function renderKeyboard(){
+  const kb = document.getElementById("kb");
+  kb.innerHTML = "";
+  KB_ROWS.forEach(row=>{
+    const r = el(`<div class="kb-row"></div>`);
+    row.forEach(K=>{
+      const f = FINGERS[K.k] || "thumb";
+      const key = el(`<div class="kb-key f-${f} ${K.cls||""} ${K.bump?"bump":""}" data-k="${esc(K.k)}">${esc(K.label||K.k)}</div>`);
+      r.appendChild(key);
+    });
+    kb.appendChild(r);
+  });
+}
+function updateStats(){
+  const wpmEl = document.getElementById("stWpm");
+  const accEl = document.getElementById("stAcc");
+  const bar = document.getElementById("stBar");
+  if(!wpmEl) return;
+  const mins = lesson.startedAt ? (Date.now()-lesson.startedAt)/60000 : 0;
+  const wpm = mins>0.02 ? Math.round((lesson.correct/5)/mins) : 0;
+  const att = lesson.correct+lesson.errors;
+  const acc = att ? Math.round(lesson.correct/att*100) : 100;
+  wpmEl.textContent = wpm;
+  accEl.textContent = acc;
+  if(bar){
+    let frac;
+    if(lesson.def.mode==="timed") frac = 1 - (lesson.timeLeft||0)/lesson.def.seconds;
+    else{
+      const before = lesson.lines.slice(0,lesson.lineIdx).reduce((n,s)=>n+s.length,0);
+      frac = (before+lesson.pos)/lesson.totalChars;
+    }
+    bar.style.width = Math.min(100,Math.round(frac*100))+"%";
+  }
+}
+function tickLesson(){
+  if(!lesson.active || lesson.finished) return;
+  if(lesson.def.mode==="timed" && lesson.startedAt){
+    const gone = (Date.now()-lesson.startedAt)/1000;
+    lesson.timeLeft = Math.max(0, lesson.def.seconds - gone);
+    const t = document.getElementById("stTime");
+    if(t) t.textContent = Math.ceil(lesson.timeLeft);
+    if(lesson.timeLeft<=0){ finishLesson(); return; }
+  }
+  updateStats();
+}
+function handleLessonKey(e){
+  if(!lesson.active || lesson.finished) return;
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  if(e.key==="Escape"){ exitLesson(); return; }
+  if(e.key.length!==1) return;
+  e.preventDefault();
+  const want = expectedChar();
+  if(want==null) return;
+  if(!lesson.startedAt) lesson.startedAt = Date.now();
+  if(e.key===want){
+    lesson.correct++; lesson.pos++;
+    sfx.tap();
+    const line = lesson.lines[lesson.lineIdx];
+    if(lesson.pos>=line.length){
+      if(lesson.lineIdx>=lesson.lines.length-1){ finishLesson(); return; }
+      lesson.lineIdx++; lesson.pos=0;
+      sfx.line();
+      renderLineDots();
+      renderTypeLine();
+    }else{
+      paintTypeLine();
+    }
+  }else{
+    lesson.errors++;
+    sfx.err();
+    const cur = document.querySelector(".type-line .c.cur");
+    if(cur) cur.classList.add("err");
+    const card = document.getElementById("typeCard");
+    card.classList.remove("shake"); void card.offsetWidth; card.classList.add("shake");
+    updateStats();
+  }
+}
+function starRules(l){
+  if(l.mode==="timed") return {kind:"wpm", t:l.starsWpm};
+  if(l.mode==="acc") return {kind:"acc", t:l.starsAcc};
+  return {kind:"std", t:null};
+}
+function computeStars(l, wpm, acc){
+  const r = starRules(l);
+  if(r.kind==="wpm"){
+    let s = wpm>=r.t[2]?3:wpm>=r.t[1]?2:wpm>=r.t[0]?1:0;
+    if(acc<85) s = Math.min(s,1);
+    return s;
+  }
+  if(r.kind==="acc") return acc>=r.t[2]?3:acc>=r.t[1]?2:acc>=r.t[0]?1:0;
+  if(acc>=96 && wpm>=l.unit.wpm3) return 3;
+  if(acc>=90) return 2;
+  if(acc>=80) return 1;
+  return 0;
+}
+function finishLesson(){
+  lesson.finished = true;
+  clearInterval(lesson.timer);
+  const l = lesson.def, p = me();
+  const mins = lesson.startedAt ? Math.max(0.02,(Date.now()-lesson.startedAt)/60000) : 1;
+  const wpm = Math.round((lesson.correct/5)/mins);
+  const att = lesson.correct+lesson.errors;
+  const acc = att ? Math.round(lesson.correct/att*100) : 100;
+  const stars = computeStars(l, wpm, acc);
+  const prev = lessonRec(p,l.id) || {stars:0,bestWpm:0,bestAcc:0,tries:0};
+  p.progress[l.id] = {
+    stars: Math.max(prev.stars, stars),
+    bestWpm: Math.max(prev.bestWpm, wpm),
+    bestAcc: Math.max(prev.bestAcc, acc),
+    tries: prev.tries+1
+  };
+  p.history.push({d:Date.now(), id:l.id, wpm, acc, stars});
+  if(p.history.length>400) p.history = p.history.slice(-400);
+  save(); refreshTopbar();
+  sfx.star(stars);
+  showResults(l, wpm, acc, stars);
+}
+function showResults(l, wpm, acc, stars){
+  const verdicts = ["Keep practicing!","Nice work!","Great typing!","Superstar! ⭐"];
+  const notes = [
+    "Try this lesson again — slow down and aim for every key.",
+    "One more try could earn you more stars!",
+    "So close to three stars — a touch more accuracy!",
+    stars===3 && l.id==="l41" ? "You finished the whole quest!" : "On to the next adventure!"
+  ];
+  const idx = LESSON_INDEX[l.id];
+  const next = ALL_LESSONS[idx+1];
+  const p = me();
+  const canNext = next && isLessonUnlocked(p,next.id);
+  const gradNow = l.id==="l41" && stars>=1;
+  const wrap = el(`<div class="overlay"><div class="result-card">
+    <div class="result-stars">
+      <span class="s${stars>=1?" on":""}">⭐</span><span class="s${stars>=2?" on":""}">⭐</span><span class="s${stars>=3?" on":""}">⭐</span>
+    </div>
+    <div class="result-verdict">${verdicts[stars]}</div>
+    <div class="result-stats">
+      <div class="stat"><div class="v">${wpm}</div><div class="l">wpm</div></div>
+      <div class="stat"><div class="v">${acc}</div><div class="l">% accuracy</div></div>
+    </div>
+    <p class="result-note">${notes[stars]}</p>
+    <div class="row">
+      <button class="keycap" data-x="again">↻ Try again</button>
+      ${gradNow?`<button class="keycap sunny" data-x="cert">🎓 Certificate</button>`:""}
+      ${canNext&&!gradNow?`<button class="keycap primary" data-x="next">Next lesson →</button>`:""}
+      <button class="keycap ghost" data-x="map">Map</button>
+    </div>
+  </div></div>`);
+  if(stars===3){
+    const card = wrap.querySelector(".result-card");
+    const colors = ["#FFC845","#FF7B6B","#3EC28F","#8A6FE8","#8F9FF3"];
+    for(let i=0;i<26;i++){
+      const c = el(`<i class="confetti"></i>`);
+      c.style.left = Math.random()*100+"%";
+      c.style.background = colors[i%colors.length];
+      c.style.animationDelay = (Math.random()*0.5)+"s";
+      c.style.transform = `rotate(${Math.random()*360}deg)`;
+      card.appendChild(c);
+    }
+  }
+  wrap.querySelector('[data-x="again"]').addEventListener("click", ()=>{ wrap.remove(); startLesson(l.id); });
+  wrap.querySelector('[data-x="map"]').addEventListener("click", ()=>{ wrap.remove(); exitLesson(); });
+  const nb = wrap.querySelector('[data-x="next"]');
+  if(nb) nb.addEventListener("click", ()=>{ wrap.remove(); startLesson(next.id); });
+  const cb = wrap.querySelector('[data-x="cert"]');
+  if(cb) cb.addEventListener("click", ()=>{ wrap.remove(); lesson.active=false; renderCert(); showScreen("s-cert"); });
+  document.getElementById("overlayRoot").appendChild(wrap);
+}
+function exitLesson(){
+  lesson.active = false;
+  clearInterval(lesson.timer);
+  renderMap();
+  showScreen("s-map");
+}
+
+/* ---------------- progress (grown-ups) ---------------- */
+function renderProgress(){
+  const p = me(); if(!p) return;
+  const root = document.getElementById("s-progress");
+  const done = ALL_LESSONS.filter(l=>starsOf(p,l.id)>=1).length;
+  const bestWpm = Math.max(0,...p.history.map(h=>h.wpm));
+  const accs = p.history.slice(-30).map(h=>h.acc);
+  const avgAcc = accs.length? Math.round(accs.reduce((a,b)=>a+b,0)/accs.length) : 0;
+  root.innerHTML = `
+    <div class="lesson-top">
+      <button class="keycap ghost" id="pgBack">← Map</button>
+      <div class="titles"><h1>Progress report</h1>
+      <div class="crumbs">For grown-ups — how ${esc(p.name)} is doing</div></div>
+    </div>
+    <div class="prog-grid">
+      <div class="prog-tile"><div class="v">${done}/${ALL_LESSONS.length}</div><div class="l">lessons done</div></div>
+      <div class="prog-tile"><div class="v">${totalStars(p)}</div><div class="l">stars earned</div></div>
+      <div class="prog-tile"><div class="v">${bestWpm||"—"}</div><div class="l">best wpm</div></div>
+      <div class="prog-tile"><div class="v">${avgAcc||"—"}${avgAcc?"%":""}</div><div class="l">recent accuracy</div></div>
+    </div>
+    <div class="prog-section">
+      <h3>Speed over the last attempts</h3>
+      <div class="spark" id="spark"></div>
+    </div>
+    <div class="prog-section">
+      <h3>Lesson by lesson</h3>
+      <div class="table-scroll"><table class="prog-table"><thead>
+        <tr><th>Lesson</th><th>Stars</th><th>Best wpm</th><th>Best acc</th><th>Tries</th></tr>
+      </thead><tbody id="pgRows"></tbody></table></div>
+    </div>
+    <div class="prog-section">
+      <h3>Tips for typing coaches</h3>
+      <ul class="parent-tips">
+        <li><b>Short and often beats long and rare.</b> Ten minutes a day builds skill faster than an hour once a week.</li>
+        <li><b>Accuracy first, speed second.</b> Speed grows naturally once fingers know the way. Aim for 90%+ accuracy before chasing wpm.</li>
+        <li><b>Watch the posture.</b> Feet flat, wrists floating, screen at eye height, fingers curved on the home row bumps (F and J).</li>
+        <li><b>Games are practice too!</b> The arcade games use the same keys the lessons teach — guilt-free play.</li>
+        <li><b>Ages 6–8:</b> Home Row Harbor and Top Row Trail may be a full year's journey. That's normal and great.</li>
+      </ul>
+      <div class="danger-zone">
+        <button class="keycap ghost" id="pgReset">Reset ${esc(p.name)}'s progress…</button>
+      </div>
+    </div>`;
+  const spark = root.querySelector("#spark");
+  const hist = p.history.slice(-24);
+  if(hist.length===0) spark.innerHTML = `<p style="color:var(--sub)">No attempts yet — the chart fills in as lessons are played.</p>`;
+  else{
+    const max = Math.max(...hist.map(h=>h.wpm),10);
+    spark.innerHTML = hist.map(h=>
+      `<i style="height:${Math.max(4,Math.round(h.wpm/max*100))}%" class="${h.wpm===max?"hi":""}" title="${h.wpm} wpm"></i>`).join("");
+  }
+  const rows = root.querySelector("#pgRows");
+  UNITS.forEach(u=>{
+    rows.appendChild(el(`<tr><td colspan="5" style="font-family:var(--display);font-weight:700">${u.icon} ${u.name}</td></tr>`));
+    u.lessons.forEach(l=>{
+      const r = lessonRec(p,l.id);
+      rows.appendChild(el(`<tr>
+        <td>${esc(l.title)}</td>
+        <td>${r?"⭐".repeat(r.stars)||"—":"—"}</td>
+        <td class="mono">${r?r.bestWpm:"—"}</td>
+        <td class="mono">${r?r.bestAcc+"%":"—"}</td>
+        <td class="mono">${r?r.tries:"—"}</td>
+      </tr>`));
+    });
+  });
+  root.querySelector("#pgBack").addEventListener("click", ()=>{ renderMap(); showScreen("s-map"); });
+  root.querySelector("#pgReset").addEventListener("click", ()=>{
+    const wrap = el(`<div class="modal-wrap"><div class="modal">
+      <h2>Reset progress?</h2>
+      <p style="color:var(--sub)">This erases all of ${esc(p.name)}'s stars, scores and history. It cannot be undone.</p>
+      <div class="row">
+        <button class="keycap" data-x="no">Keep progress</button>
+        <button class="keycap primary" data-x="yes">Yes, reset</button>
+      </div>
+    </div></div>`);
+    wrap.querySelector('[data-x="no"]').addEventListener("click",()=>wrap.remove());
+    wrap.querySelector('[data-x="yes"]').addEventListener("click",()=>{
+      p.progress={}; p.scores={}; p.history=[]; save();
+      wrap.remove(); refreshTopbar(); renderProgress();
+    });
+    document.getElementById("modalRoot").appendChild(wrap);
+  });
+}
+
+/* ---------------- certificate ---------------- */
+function renderCert(){
+  const p = me(); if(!p) return;
+  const root = document.getElementById("s-cert");
+  const bestWpm = Math.max(0,...p.history.map(h=>h.wpm));
+  const date = new Date().toLocaleDateString(undefined,{year:"numeric",month:"long",day:"numeric"});
+  root.innerHTML = `
+    <div class="lesson-top no-print">
+      <button class="keycap ghost" id="certBack">← Map</button>
+      <div class="titles"><h1>Certificate</h1></div>
+      <button class="keycap primary" id="certPrint">🖨️ Print</button>
+    </div>
+    <div class="cert">
+      <div class="seal">🎓</div>
+      <h2>Certificate of Typing Mastery</h2>
+      <p class="sub">This certifies that</p>
+      <div class="cname">${p.avatar} ${esc(p.name)}</div>
+      <p class="sub">has completed the full TypeQuest journey —<br>every key from A to Z, capitals, numbers and all.</p>
+      <div class="cstats">
+        <span>⭐ ${totalStars(p)} stars</span>
+        <span>⚡ ${bestWpm} wpm best</span>
+      </div>
+      <p class="sub">${date}</p>
+      <div class="sig">
+        <div class="owl-sig">🦉 Professor Hoot</div>
+        Headmaster, TypeQuest Academy
+      </div>
+    </div>`;
+  root.querySelector("#certBack").addEventListener("click", ()=>{ renderMap(); showScreen("s-map"); });
+  root.querySelector("#certPrint").addEventListener("click", ()=>window.print());
+}
+
+/* ---------------- global wiring ---------------- */
+document.getElementById("logoBtn").addEventListener("click", goHome);
+document.getElementById("logoBtn").addEventListener("keydown", e=>{ if(e.key==="Enter"||e.key===" ") goHome(); });
+function goHome(){
+  if(lesson.active) { exitLesson(); return; }
+  if(game.active){ stopGame(); }
+  if(me()){ renderMap(); showScreen("s-map"); }
+  else { renderProfiles(); showScreen("s-profiles"); }
+}
+document.getElementById("soundBtn").addEventListener("click", ()=>{
+  state.muted = !state.muted; save(); refreshTopbar();
+});
+document.getElementById("progressBtn").addEventListener("click", ()=>{
+  if(lesson.active) exitLesson();
+  renderProgress(); showScreen("s-progress");
+});
+document.getElementById("profileChip").addEventListener("click", ()=>{
+  if(lesson.active) { lesson.active=false; clearInterval(lesson.timer); }
+  if(game.active) stopGame();
+  renderProfiles(); showScreen("s-profiles");
+});
+window.addEventListener("keydown", e=>{
+  if(lesson.active && !lesson.finished){ handleLessonKey(e); return; }
+  if(game.active){ handleGameKey(e); return; }
+});
+
+/* ---------------- boot ---------------- */
+refreshTopbar();
+if(me()){ renderMap(); showScreen("s-map"); }
+else { renderProfiles(); showScreen("s-profiles"); }
+
+
+// ===GAMES===
+
+const game = {active:false, id:null};
+function stopGame(){
+  game.active = false;
+  if(game.raf) cancelAnimationFrame(game.raf);
+  if(game.spawner) clearInterval(game.spawner);
+  if(game.spawnTimeout) clearTimeout(game.spawnTimeout);
+  if(game.clock) clearInterval(game.clock);
+  game.raf = game.spawner = game.spawnTimeout = game.clock = null;
+}
+function startGame(id){
+  stopGame();
+  const g = GAMES[id], p = me(); if(!g||!p) return;
+  game.id = id;
+  const root = document.getElementById("s-game");
+  root.innerHTML = `
+    <div class="game-head">
+      <button class="keycap ghost" id="gBack">← Map</button>
+      <div class="titles">
+        <h2>${g.icon} ${g.name}</h2>
+        <div class="crumbs" style="color:var(--sub)">${g.how}</div>
+      </div>
+    </div>
+    <div class="game-shell"><div class="game-stage${id==="race"?" night":""}" id="stage">
+      <div class="game-hud">
+        <span class="pill">Score <b id="gScore">0</b></span>
+        <span class="pill" id="gMid"></span>
+        <span class="pill hearts" id="gHearts"></span>
+      </div>
+      <div class="game-over" id="gStart">
+        <div class="result-card" style="max-width:380px">
+          <div style="font-size:3rem">${g.icon}</div>
+          <h2>${g.name}</h2>
+          <p style="color:var(--sub);margin-top:6px">${g.how}</p>
+          <p class="result-note">Best score: ${p.scores[id]||0}</p>
+          <div class="row"><button class="keycap primary big" id="gGo">Play!</button></div>
+        </div>
+      </div>
+    </div></div>`;
+  document.getElementById("gBack").addEventListener("click", ()=>{ stopGame(); renderMap(); showScreen("s-map"); });
+  document.getElementById("gGo").addEventListener("click", ()=>{
+    document.getElementById("gStart").remove();
+    runGame(id);
+  });
+  showScreen("s-game");
+}
+function setHearts(n){
+  const h = document.getElementById("gHearts");
+  if(h){ h.style.display=""; h.textContent = "❤️".repeat(n) + "🤍".repeat(Math.max(0,3-n)); }
+}
+function setScore(n){
+  const s = document.getElementById("gScore");
+  if(s) s.textContent = n;
+}
+function floatMsg(stage, x, y, text){
+  const m = el(`<span class="game-msg">${text}</span>`);
+  m.style.left = x+"px"; m.style.top = y+"px";
+  stage.appendChild(m);
+  setTimeout(()=>m.remove(), 850);
+}
+function endGame(title, note, score){
+  stopGame();
+  game.active = false;
+  const p = me(), id = game.id;
+  const best = Math.max(p.scores[id]||0, score);
+  const isRecord = score > (p.scores[id]||0) && score>0;
+  p.scores[id] = best; save();
+  if(isRecord) sfx.win(); else sfx.lose();
+  const stage = document.getElementById("stage");
+  if(!stage) return;
+  const over = el(`<div class="game-over">
+    <div class="result-card" style="max-width:380px">
+      <div style="font-size:2.6rem">${title}</div>
+      <div class="result-stats">
+        <div class="stat"><div class="v">${score}</div><div class="l">score</div></div>
+        <div class="stat"><div class="v">${best}</div><div class="l">best</div></div>
+      </div>
+      <p class="result-note">${isRecord?"🏆 New record!":note}</p>
+      <div class="row">
+        <button class="keycap primary" id="gAgain">↻ Play again</button>
+        <button class="keycap ghost" id="gMap">Map</button>
+      </div>
+    </div>
+  </div>`);
+  stage.appendChild(over);
+  over.querySelector("#gAgain").addEventListener("click", ()=>startGame(id));
+  over.querySelector("#gMap").addEventListener("click", ()=>{ renderMap(); showScreen("s-map"); });
+}
+function runGame(id){
+  game.active = true;
+  if(id==="rain") runRain();
+  else if(id==="pop") runPop();
+  else runRace();
+}
+function handleGameKey(e){
+  if(e.ctrlKey||e.metaKey||e.altKey) return;
+  if(e.key==="Escape"){ stopGame(); renderMap(); showScreen("s-map"); return; }
+  if(e.key.length!==1) return;
+  e.preventDefault();
+  if(game.onKey) game.onKey(e.key);
+}
+
+/* ---------- Letter Rain ---------- */
+function runRain(){
+  const p = me();
+  const stage = document.getElementById("stage");
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const pool = learnedKeys(p);
+  let letters = [], hearts = 3, score = 0, speed = 34, spawnGap = 1600, last = performance.now();
+  setHearts(hearts); setScore(0);
+  document.getElementById("gMid").textContent = "Type the falling letters!";
+  function spawn(){
+    const ch = pool[Math.floor(Math.random()*pool.length)];
+    const node = el(`<div class="fall-letter">${ch}</div>`);
+    const x = 20 + Math.random()*(W-86);
+    node.style.left = x+"px"; node.style.top = "-50px";
+    stage.appendChild(node);
+    letters.push({ch, x, y:-50, node, v: speed*(0.8+Math.random()*0.5)});
+  }
+  let alive = true;
+  function spawnLoop(){
+    if(!game.active||!alive) return;
+    spawn();
+    speed = Math.min(110, speed+1.4);
+    spawnGap = Math.max(620, spawnGap-22);
+    game.spawnTimeout = setTimeout(spawnLoop, spawnGap);
+  }
+  spawnLoop();
+  function frame(now){
+    if(!game.active) return;
+    const dt = Math.min(0.05,(now-last)/1000); last = now;
+    for(const L of [...letters]){
+      L.y += L.v*dt;
+      L.node.style.top = L.y+"px";
+      if(L.y > H-56){
+        letters = letters.filter(x=>x!==L);
+        L.node.remove();
+        hearts--; setHearts(hearts);
+        sfx.lose();
+        floatMsg(stage, L.x, H-80, "splash!");
+        if(hearts<=0){ alive=false; clearTimeout(game.spawnTimeout); endGame("🌧️", "The rain won this time!", score); return; }
+      }
+    }
+    game.raf = requestAnimationFrame(frame);
+  }
+  game.raf = requestAnimationFrame(frame);
+  game.onKey = (key)=>{
+    const k = key.toLowerCase();
+    const match = letters.filter(L=>L.ch===k).sort((a,b)=>b.y-a.y)[0];
+    if(match){
+      letters = letters.filter(x=>x!==match);
+      match.node.classList.add("zap");
+      setTimeout(()=>match.node.remove(), 240);
+      score += 10; setScore(score);
+      sfx.zap();
+      floatMsg(stage, match.x, match.y, "+10");
+    }else{
+      sfx.err();
+    }
+  };
+}
+
+/* ---------- Balloon Pop ---------- */
+function runPop(){
+  const p = me();
+  const stage = document.getElementById("stage");
+  const W = stage.clientWidth, H = stage.clientHeight;
+  const pool = GAME_WORDS[gameDifficulty(p)];
+  let balloons = [], hearts = 3, score = 0, target = null, speed = 26, gap = 3000, last = performance.now();
+  setHearts(hearts); setScore(0);
+  document.getElementById("gMid").textContent = "Type a word to pop its balloon!";
+  function wordHtml(b){
+    return `<span class="did">${esc(b.word.slice(0,b.typed))}</span>${esc(b.word.slice(b.typed))}`;
+  }
+  function spawn(){
+    const word = pool[Math.floor(Math.random()*pool.length)];
+    if(balloons.some(b=>b.word[0]===word[0])) return; // avoid ambiguous first letters
+    const color = BALLOON_COLORS[Math.floor(Math.random()*BALLOON_COLORS.length)];
+    const node = el(`<div class="balloon">
+      <div class="body" style="background:${color}">${["🐞","🐤","🐟","🌼","🍓","⚡"][Math.floor(Math.random()*6)]}</div>
+      <div class="string"></div>
+      <div class="word"></div>
+    </div>`);
+    const x = 14 + Math.random()*(W-140);
+    node.style.left = x+"px"; node.style.top = H+"px";
+    stage.appendChild(node);
+    const b = {word, typed:0, x, y:H, node, v:speed*(0.85+Math.random()*0.4)};
+    b.node.querySelector(".word").innerHTML = wordHtml(b);
+    balloons.push(b);
+  }
+  function spawnLoop(){
+    if(!game.active) return;
+    spawn();
+    speed = Math.min(60, speed+1.2);
+    gap = Math.max(1500, gap-60);
+    game.spawnTimeout = setTimeout(spawnLoop, gap);
+  }
+  spawnLoop();
+  function frame(now){
+    if(!game.active) return;
+    const dt = Math.min(0.05,(now-last)/1000); last = now;
+    for(const b of [...balloons]){
+      b.y -= b.v*dt;
+      b.node.style.top = b.y+"px";
+      if(b.y < -170){
+        balloons = balloons.filter(x=>x!==b);
+        if(target===b) target=null;
+        b.node.remove();
+        hearts--; setHearts(hearts);
+        sfx.lose();
+        if(hearts<=0){ clearTimeout(game.spawnTimeout); endGame("🎈","The balloons floated away!",score); return; }
+      }
+    }
+    game.raf = requestAnimationFrame(frame);
+  }
+  game.raf = requestAnimationFrame(frame);
+  game.onKey = (key)=>{
+    const k = key.toLowerCase();
+    if(!target){
+      const candidates = balloons.filter(b=>b.word[0]===k).sort((a,b)=>a.y-b.y);
+      if(candidates.length){ target = candidates[0]; target.node.classList.add("active"); }
+      else { sfx.err(); return; }
+    }else if(target.word[target.typed] !== k){
+      sfx.err();
+      return;
+    }
+    target.typed++;
+    sfx.tap();
+    target.node.querySelector(".word").innerHTML = wordHtml(target);
+    if(target.typed >= target.word.length){
+      const b = target; target = null;
+      balloons = balloons.filter(x=>x!==b);
+      b.node.classList.add("pop");
+      setTimeout(()=>b.node.remove(), 260);
+      score += b.word.length*5; setScore(score);
+      sfx.pop();
+      floatMsg(stage, b.x+30, b.y, `+${b.word.length*5}`);
+    }
+  };
+}
+
+/* ---------- Rocket Race ---------- */
+function runRace(){
+  const p = me();
+  const stage = document.getElementById("stage");
+  const diff = gameDifficulty(p);
+  const pool = GAME_WORDS[diff];
+  const roboCps = diff==="easy" ? 1.0 : diff==="medium" ? 1.6 : 2.2;
+  const RACE_LEN = 140; // characters to the finish line
+  const DURATION = 45;
+  let typedChars = 0, roboChars = 0, timeLeft = DURATION, wordQ = [], typed = 0, score = 0;
+  document.getElementById("gHearts").style.display = "none";
+  document.getElementById("gMid").innerHTML = `⏱ <b id="raceT">${DURATION}</b>s`;
+  setScore(0);
+  function draw(){
+    return pool[Math.floor(Math.random()*pool.length)];
+  }
+  while(wordQ.length<3) wordQ.push(draw());
+  const track = el(`<div class="race-track">
+    <div class="race-lane" style="top:52px">
+      <div class="road"></div>
+      <span class="racer" id="meR" style="left:20px">🚀</span>
+    </div>
+    <div class="race-lane" style="top:150px">
+      <div class="road"></div>
+      <span class="racer" id="roboR" style="left:20px">🛸</span>
+    </div>
+    <div class="race-word-zone">
+      <div class="race-word" id="raceWord"></div>
+      <div class="race-upnext" id="raceNext"></div>
+    </div>
+  </div>`);
+  stage.appendChild(track);
+  const W = stage.clientWidth;
+  function paintWord(){
+    const w = wordQ[0];
+    document.getElementById("raceWord").innerHTML =
+      `<span class="did">${esc(w.slice(0,typed))}</span>${esc(w.slice(typed))}`;
+    document.getElementById("raceNext").textContent = "up next: "+wordQ.slice(1,3).join("  ·  ");
+  }
+  function paintRockets(){
+    const span = W-120;
+    document.getElementById("meR").style.left = (20+Math.min(1,typedChars/RACE_LEN)*span)+"px";
+    document.getElementById("roboR").style.left = (20+Math.min(1,roboChars/RACE_LEN)*span)+"px";
+  }
+  paintWord(); paintRockets();
+  game.clock = setInterval(()=>{
+    if(!game.active) return;
+    timeLeft--; roboChars += roboCps;
+    const t = document.getElementById("raceT");
+    if(t) t.textContent = timeLeft;
+    paintRockets();
+    const meDone = typedChars>=RACE_LEN, roboDone = roboChars>=RACE_LEN;
+    if(meDone||roboDone||timeLeft<=0){
+      const win = typedChars>=roboChars;
+      endGame(win?"🏆":"🛸", win?"You beat Robo-Rocket!":"Robo-Rocket wins this round — try again!", score);
+    }
+  }, 1000);
+  game.onKey = (key)=>{
+    const w = wordQ[0];
+    if(key.toLowerCase()===w[typed]){
+      typed++; sfx.tap();
+      if(typed>=w.length){
+        typedChars += w.length+1;
+        score += w.length; setScore(score);
+        wordQ.shift(); wordQ.push(draw());
+        typed = 0;
+        sfx.pop();
+        paintRockets();
+      }
+      paintWord();
+    }else{
+      sfx.err();
+    }
+  };
+}
+
+</script>
