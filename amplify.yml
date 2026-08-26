@@ -9,7 +9,7 @@ frontend:
       commands:
         # Amplify env vars exist only at build time; Next.js server runtime
         # reads them from .env.production inside the compute bundle.
-        - env | grep -E '^(DATABASE_URL|CLERK_SECRET_KEY|NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY)=' >> .env.production
+        - env | grep -E '^(DATABASE_URL|CLERK_SECRET_KEY|NEXT_PUBLIC_CLERK_PUBLISHABLE_KEY|STRIPE_SECRET_KEY|STRIPE_WEBHOOK_SECRET|STRIPE_LIFETIME_PRICE_ID)=' >> .env.production
         - pnpm build
   artifacts:
     baseDirectory: .next

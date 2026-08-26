@@ -53,6 +53,23 @@ export const attempts = pgTable(
   (t) => [index("attempts_typist_idx").on(t.typistId)],
 );
 
+/** Lifetime (and future non-subscription) grants. Subscriptions live in Clerk. */
+export const entitlements = pgTable("entitlements", {
+  userId: text("user_id").primaryKey(),
+  plan: text("plan").notNull().default("lifetime"),
+  source: text("source").notNull(), // 'invite' | 'stripe'
+  sourceRef: text("source_ref"), // invite code or stripe session id
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
+export const inviteCodes = pgTable("invite_codes", {
+  code: text("code").primaryKey(),
+  label: text("label").notNull().default(""),
+  maxUses: integer("max_uses").notNull().default(1),
+  usedCount: integer("used_count").notNull().default(0),
+  createdAt: timestamp("created_at").notNull().defaultNow(),
+});
+
 export const gameScores = pgTable(
   "game_scores",
   {

@@ -27,7 +27,14 @@ export function RocketRace({
     return [draw(), draw(), draw()];
   });
 
-  const state = useRef({ typedChars: 0, roboChars: 0, typed: 0, score: 0, done: false });
+  const state = useRef({
+    typedChars: 0,
+    roboChars: 0,
+    typed: 0,
+    score: 0,
+    time: DURATION,
+    done: false,
+  });
   const queueRef = useRef(queue);
   useEffect(() => {
     queueRef.current = queue;
@@ -39,22 +46,20 @@ export function RocketRace({
       const s = state.current;
       if (s.done) return;
       s.roboChars += roboCps;
+      s.time -= 1;
       setRoboChars(s.roboChars);
-      setTimeLeft((t) => {
-        const next = t - 1;
-        const meDone = s.typedChars >= RACE_LEN;
-        const roboDone = s.roboChars >= RACE_LEN;
-        if (meDone || roboDone || next <= 0) {
-          s.done = true;
-          const win = s.typedChars >= s.roboChars;
-          onEnd(
-            s.score,
-            win ? "🏆" : "🛸",
-            win ? "You beat Robo-Rocket!" : "Robo-Rocket wins this round — try again!",
-          );
-        }
-        return Math.max(0, next);
-      });
+      setTimeLeft(Math.max(0, s.time));
+      const meDone = s.typedChars >= RACE_LEN;
+      const roboDone = s.roboChars >= RACE_LEN;
+      if (meDone || roboDone || s.time <= 0) {
+        s.done = true;
+        const win = s.typedChars >= s.roboChars;
+        onEnd(
+          s.score,
+          win ? "🏆" : "🛸",
+          win ? "You beat Robo-Rocket!" : "Robo-Rocket wins this round — try again!",
+        );
+      }
     }, 1000);
     return () => clearInterval(clock);
   }, [difficulty, onEnd]);

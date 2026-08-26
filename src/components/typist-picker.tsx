@@ -39,14 +39,21 @@ export function TypistPicker() {
   const [avatar, setAvatar] = useState(AVATARS[0]);
   const [busy, setBusy] = useState(false);
 
+  const upgradeToast = () =>
+    toast.error("The free plan includes one cloud typist.", {
+      description: "The Family plan adds unlimited typists for the whole crew.",
+      action: { label: "See plans", onClick: () => router.push("/pricing") },
+    });
+
   const startQuest = async () => {
     setBusy(true);
     try {
       await create(name, avatar);
       setOpen(false);
       router.push("/map");
-    } catch {
-      toast.error("Couldn't create that typist. Try again.");
+    } catch (e) {
+      if (e instanceof Error && e.message === "FAMILY_PLAN_REQUIRED") upgradeToast();
+      else toast.error("Couldn't create that typist. Try again.");
     } finally {
       setBusy(false);
     }
@@ -98,7 +105,10 @@ export function TypistPicker() {
                 variant="secondary"
                 className="font-display font-bold"
                 onClick={() =>
-                  migrateLocal().catch(() => toast.error("Couldn't move local typists. Try again."))
+                  migrateLocal().catch((e) => {
+                    if (e instanceof Error && e.message === "FAMILY_PLAN_REQUIRED") upgradeToast();
+                    else toast.error("Couldn't move local typists. Try again.");
+                  })
                 }
               >
                 <CloudUpload className="size-4" />

@@ -6,6 +6,7 @@ import { getDb } from "@/db";
 import { attempts, gameScores, lessonProgress, typists } from "@/db/schema";
 import { LESSON_BY_ID, GAMES, GameId } from "@/lib/curriculum";
 import { LessonResult, TypistData, TypistSummary } from "@/lib/progress/types";
+import { assertTypistCapacity } from "@/lib/billing";
 
 async function requireUser(): Promise<string> {
   const { userId } = await auth();
@@ -83,8 +84,16 @@ export async function getTypist(typistId: string): Promise<TypistData> {
   };
 }
 
-export async function createTypist(name: string, avatar: string): Promise<TypistSummary> {
+export async function createTypist(
+  name: string,
+  avatar: string,
+): Promise<TypistSummary | { error: "FAMILY_PLAN_REQUIRED" }> {
   const userId = await requireUser();
+  try {
+    await assertTypistCapacity(userId, 1);
+  } catch {
+    return { error: "FAMILY_PLAN_REQUIRED" };
+  }
   const cleanName = String(name).trim().slice(0, 24) || "Typist";
   const cleanAvatar = String(avatar).slice(0, 8) || "🙂";
   const db = getDb();
@@ -176,10 +185,18 @@ export async function recordScore(typistId: string, gameId: string, score: numbe
 }
 
 /** One-shot migration of guest (localStorage) typists into the signed-in account. */
-export async function importTypists(data: TypistData[]): Promise<void> {
+export async function importTypists(
+  data: TypistData[],
+): Promise<{ error: "FAMILY_PLAN_REQUIRED" } | { ok: true }> {
   const userId = await requireUser();
+  const batch = data.slice(0, 12);
+  try {
+    await assertTypistCapacity(userId, batch.length);
+  } catch {
+    return { error: "FAMILY_PLAN_REQUIRED" };
+  }
   const db = getDb();
-  for (const t of data.slice(0, 12)) {
+  for (const t of batch) {
     const [row] = await db
       .insert(typists)
       .values({
@@ -220,4 +237,5 @@ export async function importTypists(data: TypistData[]): Promise<void> {
       }));
     if (histRows.length) await db.insert(attempts).values(histRows);
   }
+  return { ok: true };
 }

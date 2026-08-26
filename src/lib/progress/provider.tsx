@@ -122,6 +122,7 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
     async (name: string, avatar: string) => {
       if (mode === "cloud") {
         const summary = await cloud.createTypist(name, avatar);
+        if ("error" in summary) throw new Error(summary.error);
         const data = await cloud.getTypist(summary.id);
         setTypists((prev) => [...prev, summary]);
         setActive(data);
@@ -265,7 +266,8 @@ export function ProgressProvider({ children }: { children: React.ReactNode }) {
   const migrateLocal = useCallback(async () => {
     const localTypists = localRef.current.typists;
     if (localTypists.length === 0) return;
-    await cloud.importTypists(localTypists);
+    const res = await cloud.importTypists(localTypists);
+    if ("error" in res) throw new Error(res.error);
     localRef.current.typists = [];
     localRef.current.activeId = null;
     persistLocal();
