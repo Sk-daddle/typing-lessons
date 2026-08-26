@@ -29,6 +29,9 @@ export function Topbar() {
               Arcade
             </Link>
           </Button>
+          <Button asChild variant="ghost" size="sm" className="font-display font-bold">
+            <Link href="/pricing">Plans</Link>
+          </Button>
           {active && (
             <>
               <Badge className="border-2 border-sun bg-sun-soft font-display text-sm font-bold text-accent-foreground">
